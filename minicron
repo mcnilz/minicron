@@ -1,5 +1,10 @@
 #!/bin/bash
 
+# MIT License
+#
+# Copyright (c) 2019 Martin Schnabel
+# https://opensource.org/licenses/MIT
+
 set -f
 
 function expand_numbers() {

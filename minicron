@@ -3,13 +3,9 @@
 set -f
 
 function expand_numbers() {
-  local start=0
-
-  if [ ! -z $3 ]; then
-    start=$3
-  fi
   if [[ "$1" =~ ^((0?([0-9]{1,2}))|((0?([0-9]{1,2}))(-)(0?([0-9]{1,2})))|(\*)|((\*)/([0-9]{1,2})))$ ]];
   then
+    local i
     if [ ${BASH_REMATCH[1]} == "*" ]; then
       echo "[0-9]{1,2}"
     fi
@@ -22,6 +18,10 @@ function expand_numbers() {
       done
     fi
     if [ ! -z "${BASH_REMATCH[13]}" ]; then
+      local start=0
+      if [ ! -z $3 ]; then
+        start=$3
+      fi
       for ((i=$start;i<=$2;i++)); do
         if [ $(($i % ${BASH_REMATCH[13]})) == "0" ]; then
           echo $i
@@ -35,6 +35,7 @@ function expand_numbers() {
 
 function handle_comma {
   local IFS=','
+  local x
   for x in $1; do
     expand_numbers $x $2 $3
   done
@@ -50,16 +51,17 @@ function handle_line {
   if [[ "$1" =~ ^([0123456789,*/-]+)[[:blank:]]+([0123456789*/-]+)[[:blank:]]+([0123456789*/-]+)[[:blank:]]+([0123456789*/-]+)[[:blank:]]+([0123456789*/-]+)[[:blank:]]+(.*)$ ]];
   then
     local C=${BASH_REMATCH[6]}
-    A="$(numbers_to_regex ${BASH_REMATCH[1]} 59):%-M $(numbers_to_regex ${BASH_REMATCH[2]} 23):%-k $(numbers_to_regex ${BASH_REMATCH[3]} 31 1):%-d $(numbers_to_regex ${BASH_REMATCH[4]} 12 1):%-m $(numbers_to_regex ${BASH_REMATCH[5]} 6):%w"
+    local A="$(numbers_to_regex ${BASH_REMATCH[1]} 59):%-M $(numbers_to_regex ${BASH_REMATCH[2]} 23):%-k $(numbers_to_regex ${BASH_REMATCH[3]} 31 1):%-d $(numbers_to_regex ${BASH_REMATCH[4]} 12 1):%-m $(numbers_to_regex ${BASH_REMATCH[5]} 6):%w"
     local IFS=' '
     local DATE=""
     local REGEX=""
+    local I
+    local B
     for I in $A; do
       B=(${I//:/ })
-      # echo "A ${B[0]} B ${B[1]}"
       if [ ${B[0]} != "([0-9]{1,2})" ]; then
-        local DATE="$DATE${B[1]} "
-        local REGEX="$REGEX${B[0]} "
+        DATE="$DATE${B[1]} "
+        REGEX="$REGEX${B[0]} "
       fi
     done
     if [ -n "$DATE" ]; then
@@ -83,7 +85,7 @@ function main {
 }
 
 if [ "$1" == "-e" ]; then
-  echo "$(main)" | "$BASH"
+  main | exec "$BASH"
 else
   main
 fi

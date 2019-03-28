@@ -53,7 +53,7 @@ while true; do
   sleep $(expr 60 - $(date +%S))
   (echo "every minute") &
   if [[ $(date +"%-M") =~ ^((0|2|4|6|8|10|12|14|16|18|20|22|24|26|28|30|32|34|36|38|40|42|44|46|48|50|52|54|56|58))$ ]]; then (echo "every 2 minutes") & fi
-  if [[ $(date +"%-M %-k %w") =~ ^((0) (0) (1|2|3|4|5))$ ]]; then (echo "weekdays midnight") & fi
+  if [[ $(date +"%-M %-H %w") =~ ^((0) (0) (1|2|3|4|5))$ ]]; then (echo "weekdays midnight") & fi
 done
 ```
 

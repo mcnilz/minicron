@@ -38,7 +38,7 @@ EOF
 ## output job script
 
 ```bash
-minicron -e << EOF
+minicron << EOF
 * * * * * echo "every minute"
 */2 * * * * echo "every 2 minutes"
 0 0 * * 1-5 echo "weekdays midnight"
